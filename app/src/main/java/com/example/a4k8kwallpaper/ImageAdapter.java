@@ -44,7 +44,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
                 .apply(new RequestOptions()
                         .placeholder(R.drawable.placeholder_image)
                         .error(R.drawable.error_image))
-                .thumbnail(0.5f)
+//                .thumbnail(0.5f)
                 .into(holder.imageView);
 
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(wallpaper.getImageToUse()));

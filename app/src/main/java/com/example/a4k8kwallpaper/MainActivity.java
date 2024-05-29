@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.content.Context;
 import android.os.Build;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);  // hide mobile key button
 
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
 
         List<Integer> initialImageList = getImages(currentPage);
         List<Wallpaper> wallpapers =getWallpapersFromJson(this);
@@ -48,23 +49,23 @@ public class MainActivity extends AppCompatActivity {
         // Set the status bar color
         window.setStatusBarColor(getResources().getColor(R.color.colortransparent));
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
-                if (layoutManager != null) {
-                    int visibleItemCount = layoutManager.getChildCount();
-                    int totalItemCount = layoutManager.getItemCount();
-                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-
-                    if (!isLoading && (visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                            && firstVisibleItemPosition >= 0 && totalItemCount >= PAGE_SIZE) {
-                    }
-                }
-            }
-        });
+//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+//                if (layoutManager != null) {
+//                    int visibleItemCount = layoutManager.getChildCount();
+//                    int totalItemCount = layoutManager.getItemCount();
+//                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+//
+//                    if (!isLoading && (visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+//                            && firstVisibleItemPosition >= 0 && totalItemCount >= PAGE_SIZE) {
+//                    }
+//                }
+//            }
+//        });
     }
 
     private void onImageClick(String imageResId) {

@@ -32,9 +32,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class FullScreenImageActivity extends AppCompatActivity {
-    private ImageView fullScreenImageView;
+    private ImageView fullScreenImageView, downloadButton;
     private Button applyButton, backButton;
-    private  ProgressBar progressBar;
+    private ProgressBar progressBar;
     private String selectedImageResId;
 
     public static void start(Context context, String imageResId) {
@@ -56,35 +56,24 @@ public class FullScreenImageActivity extends AppCompatActivity {
         fullScreenImageView = findViewById(R.id.full_screen_image_view);
         applyButton = findViewById(R.id.apply_button);
         backButton = findViewById(R.id.backButton);
+        downloadButton = findViewById(R.id.download_button);
         progressBar = findViewById(R.id.progress_bar);
 
         selectedImageResId = getIntent().getStringExtra("image_res_id");
-
-//        progressBar.setVisibility(View.VISIBLE);
 
         Glide.with(this)
                 .load(selectedImageResId)
                 .thumbnail(0.4F)
                 .into(fullScreenImageView);
 
-
         applyButton.setOnClickListener(v -> showWallpaperDialog());
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(FullScreenImageActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        }); applyButton.setOnClickListener(v -> showWallpaperDialog());
-//        fullScreenImageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                progressBar.setVisibility(View.GONE);
-//            }
-//        });
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(FullScreenImageActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
+        downloadButton.setOnClickListener(v -> downloadImageToGallery());
     }
-
 
     private void showWallpaperDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -96,49 +85,57 @@ public class FullScreenImageActivity extends AppCompatActivity {
                         case 2:
                             applyButton.setVisibility(View.GONE);
                             progressBar.setVisibility(View.VISIBLE);
-
-                                setWallpaper(which);
-
+                            setWallpaper(which);
                             break;
                         case 3:
                             dialog.dismiss();
-//                            applyButton.setVisibility(View.GONE);
                             break;
                     }
                 }).show();
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void setWallpaper(int option) {
         WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
-//        Bitmap bitmap = getBitmapFromURL(selectedImageResId);
         new DownloadImageTask() {
             @Override
             protected void onPostExecute(Bitmap bitmap) {
                 if (bitmap != null) {
                     try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            if (option == 0) {
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK);
-                            } else if (option == 1) {
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM);
-                            } else if (option == 2) {
-                                wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK | WallpaperManager.FLAG_SYSTEM);
-                            }
-                        } else {
-                            wallpaperManager.setBitmap(bitmap);
+                        if (option == 0) {
+                            wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK);
+                        } else if (option == 1) {
+                            wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_SYSTEM);
+                        } else if (option == 2) {
+                            wallpaperManager.setBitmap(bitmap, null, true, WallpaperManager.FLAG_LOCK | WallpaperManager.FLAG_SYSTEM);
                         }
-                        saveImageToGallery(bitmap);
                         progressBar.setVisibility(View.GONE);
-//                        Toast.makeText(this, "Wallpaper set successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FullScreenImageActivity.this, "Wallpaper set successfully", Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         progressBar.setVisibility(View.GONE);
                         e.printStackTrace();
-//                        Toast.makeText(this, "Failed to set wallpaper", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FullScreenImageActivity.this, "Failed to set wallpaper", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         }.execute(selectedImageResId);
+    }
 
+    @SuppressLint("StaticFieldLeak")
+    private void downloadImageToGallery() {
+        progressBar.setVisibility(View.VISIBLE);
+        new DownloadImageTask() {
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                progressBar.setVisibility(View.GONE);
+                if (bitmap != null) {
+                    saveImageToGallery(bitmap);
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(FullScreenImageActivity.this, "Failed to download image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute(selectedImageResId);
     }
 
     public static Bitmap getBitmapFromURL(String src) {
@@ -163,13 +160,13 @@ public class FullScreenImageActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Bitmap result) {
-
+            // This can be overridden by the calling method
         }
     }
 
     private void saveImageToGallery(Bitmap bitmap) {
         ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "Wallpaper");
+        values.put(MediaStore.Images.Media.TITLE, "4K Wallpaper");
         values.put(MediaStore.Images.Media.DESCRIPTION, "Image set as wallpaper");
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
 

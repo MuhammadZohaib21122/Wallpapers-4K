@@ -48,24 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the status bar color
         window.setStatusBarColor(getResources().getColor(R.color.colortransparent));
-
-//        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//
-//                GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
-//                if (layoutManager != null) {
-//                    int visibleItemCount = layoutManager.getChildCount();
-//                    int totalItemCount = layoutManager.getItemCount();
-//                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-//
-//                    if (!isLoading && (visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-//                            && firstVisibleItemPosition >= 0 && totalItemCount >= PAGE_SIZE) {
-//                    }
-//                }
-//            }
-//        });
     }
 
     private void onImageClick(String imageResId) {
